@@ -1,16 +1,15 @@
 package fib.museu.plugins
 
+import io.ktor.application.*
 import io.ktor.auth.*
-import io.ktor.util.*
 import io.ktor.client.*
 import io.ktor.client.engine.apache.*
-import io.ktor.locations.*
 import io.ktor.http.*
-import io.ktor.sessions.*
-import io.ktor.application.*
 import io.ktor.response.*
-import io.ktor.request.*
 import io.ktor.routing.*
+import io.ktor.sessions.*
+import kotlin.collections.listOf
+import kotlin.collections.set
 
 fun Application.configureSecurity() {
 
@@ -46,7 +45,7 @@ fun Application.configureSecurity() {
 
             get("/callback") {
                 val principal: OAuthAccessTokenResponse.OAuth2? = call.authentication.principal()
-                call.sessions.set(UserSession(principal?.accessToken.toString()))
+//                call.sessions.set(UserSession(principal?.accessToken.toString()))
                 call.respondRedirect("/hello")
             }
         }
