@@ -1,19 +1,17 @@
 package fib.museu.plugins
 
-import io.ktor.routing.*
-import io.ktor.http.*
-import io.ktor.locations.*
 import io.ktor.application.*
+import io.ktor.locations.*
 import io.ktor.response.*
-import io.ktor.request.*
+import io.ktor.routing.*
 
 fun Application.configureRouting() {
     install(Locations) {
     }
 
     routing {
-        get("/") {
-            call.respondText("Hello World!")
+        get("/response") {
+            call.respondText("Response from backend!")
         }
         get<MyLocation> {
             call.respondText("Location: name=${it.name}, arg1=${it.arg1}, arg2=${it.arg2}")
