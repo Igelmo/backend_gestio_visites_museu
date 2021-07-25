@@ -1,6 +1,6 @@
 package fib.museu.plugins
 
-import fib.museu.datamodels.Booking
+import fib.museu.domain.datamodels.Booking
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.locations.*
@@ -23,7 +23,6 @@ fun Application.configureRouting() {
         post("/bookings") {
             runCatching {
                 val booking = call.receive<Booking>()
-                print(booking)
                 call.respondText("Reserva feta correctament", status = HttpStatusCode.Created)
             }.onFailure {
                 log.error(it)

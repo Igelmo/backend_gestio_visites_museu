@@ -1,4 +1,4 @@
-package fib.museu.datamodels
+package fib.museu.domain.datamodels
 
 data class Contact(
     val firstName: String? = null,
