@@ -1,6 +1,8 @@
 package fib.museu.plugins
 
+import fib.museu.data.BookingMySQLRepository
 import fib.museu.domain.datamodels.Booking
+import fib.museu.domain.repository.BookingRepository
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.locations.*
@@ -10,6 +12,8 @@ import io.ktor.routing.*
 import io.ktor.util.*
 
 fun Application.configureRouting() {
+    val repository: BookingRepository = BookingMySQLRepository()
+
     install(Locations) {
     }
 
@@ -23,6 +27,7 @@ fun Application.configureRouting() {
         post("/bookings") {
             runCatching {
                 val booking = call.receive<Booking>()
+                repository.setNewBooking(booking)
                 call.respondText("Reserva feta correctament", status = HttpStatusCode.Created)
             }.onFailure {
                 log.error(it)
