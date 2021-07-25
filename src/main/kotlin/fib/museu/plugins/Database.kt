@@ -81,7 +81,7 @@ object MySQLDatabaseExampleKotlin {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver")
             conn = DriverManager.getConnection(
-                "jdbc:" + "mysql" + "://" + "localhost" + ":" + "3306" + "/" + "mydb",
+                "jdbc:" + "mysql" + "://" + "localhost" + ":" + "3306" + "/" + "mydb" + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC",
                 connectionProps
             )
         } catch (ex: SQLException) {

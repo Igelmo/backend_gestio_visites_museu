@@ -1,17 +1,34 @@
 package fib.museu.plugins
 
+import fib.museu.datamodels.Booking
 import io.ktor.application.*
+import io.ktor.http.*
 import io.ktor.locations.*
+import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import io.ktor.util.*
 
 fun Application.configureRouting() {
     install(Locations) {
     }
 
     routing {
+        get("/") {
+            call.respondText { "Backend is working!" }
+        }
         get("/response") {
             call.respondText("Response from backend!")
+        }
+        post("/bookings") {
+            runCatching {
+                val booking = call.receive<Booking>()
+                print(booking)
+                call.respondText("Reserva feta correctament", status = HttpStatusCode.Created)
+            }.onFailure {
+                log.error(it)
+                call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
+            }
         }
         get<MyLocation> {
             call.respondText("Location: name=${it.name}, arg1=${it.arg1}, arg2=${it.arg2}")
@@ -28,6 +45,7 @@ fun Application.configureRouting() {
 
 @Location("/location/{name}")
 class MyLocation(val name: String, val arg1: Int = 42, val arg2: String = "default")
+
 @Location("/type/{name}")
 data class Type(val name: String) {
     @Location("/edit")
