@@ -1,7 +1,8 @@
 package fib.museu.plugins
 
 import fib.museu.data.BookingMySQLRepository
-import fib.museu.domain.datamodels.Booking
+import fib.museu.data.PersonMySQLRepository
+import fib.museu.domain.datamodels.RequestedBookingObject
 import fib.museu.domain.repository.BookingRepository
 import io.ktor.application.*
 import io.ktor.http.*
@@ -10,9 +11,19 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.*
+import org.ktorm.database.Database
+
+private val username = "dummy" // provide the username
+private val password = "dummy" // provide the corresponding password
+private val ktormDatabase = Database.connect(
+    "jdbc:mysql://localhost:3306/mydb?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC",
+    user = username,
+    password = password
+)
+
 
 fun Application.configureRouting() {
-    val repository: BookingRepository = BookingMySQLRepository()
+    val repository: BookingRepository = BookingMySQLRepository(ktormDatabase, PersonMySQLRepository(ktormDatabase))
 
     install(Locations) {
     }
@@ -26,7 +37,7 @@ fun Application.configureRouting() {
         }
         post("/bookings") {
             runCatching {
-                val booking = call.receive<Booking>()
+                val booking = call.receive<RequestedBookingObject>()
                 repository.setNewBooking(booking)
                 call.respondText("Reserva feta correctament", status = HttpStatusCode.Created)
             }.onFailure {
