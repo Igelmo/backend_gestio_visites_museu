@@ -8,6 +8,10 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version "1.5.20"
 }
 
+tasks.register("stage") {
+    dependsOn("build")
+}
+
 group = "fib.museu"
 version = "0.0.1"
 
