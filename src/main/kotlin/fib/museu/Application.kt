@@ -1,6 +1,5 @@
 package fib.museu
 
-import fib.museu.plugins.MySQLDatabaseExampleKotlin
 import fib.museu.plugins.configureMonitoring
 import fib.museu.plugins.configureRouting
 import fib.museu.plugins.configureSerialization
@@ -18,6 +17,5 @@ fun main() {
         configureRouting()
         configureMonitoring()
         configureSerialization()
-        MySQLDatabaseExampleKotlin.getConnection()
     }.start(wait = true)
 }
