@@ -32,7 +32,6 @@ class PersonMySQLRepository(
         ktormDatabase.insert(Visitors) {
             set(it.visitorEmail, visitor.email)
             set(it.center, visitor.center)
-            set(it.numVisits, 0)
         }
     }
 
@@ -62,7 +61,6 @@ class PersonMySQLRepository(
                     surname = get(Persons.surname) ?: throw IllegalStateException("Surname has to be not null"),
                     phone = get(Persons.phone) ?: throw IllegalStateException("Phone has to be not null"),
                     center = get(Visitors.center) ?: throw IllegalStateException("Center has to be not null"),
-                    numVisits = get(Visitors.numVisits) ?: throw IllegalStateException("NumVisits has to be not null"),
                 )
             }
             .first()

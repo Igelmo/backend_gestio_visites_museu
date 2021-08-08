@@ -116,4 +116,5 @@ interface Piece : Entity<Piece> {
     val imageURL: String
     val description: String
     val comments: String
+    val quantity: Int
 }

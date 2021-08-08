@@ -23,9 +23,9 @@ object Visitors : Table<Visitor>("visitor") {
     val center = varchar("center").bindTo { it.center }
 }
 
-object RequestedBookings : Table<RequestedBooking>("booking") {
-    val requestedDay = date("visitDay").primaryKey().bindTo { it.requestedDay }
-    val requestedHour = time("visitHour").primaryKey().bindTo { it.requestedHour }
+object RequestedBookings : Table<RequestedBooking>("requestedBooking") {
+    val requestedDay = date("requestedDay").primaryKey().bindTo { it.requestedDay }
+    val requestedHour = time("requestedHour").primaryKey().bindTo { it.requestedHour }
     val contactEmail = varchar("contactEmail").references(Visitors) { it.visitor }
     val assistants = int("assistants").bindTo { it.assistants }
     val typeAssistant = enum<AssistantsType>("typeAssistants").bindTo { it.typeAssistant }
@@ -58,4 +58,5 @@ object Pieces : Table<Piece>("piece") {
     val imageURL = varchar("imageURL").bindTo { it.imageURL }
     val description = varchar("description").bindTo { it.description }
     val comments = varchar("comments").bindTo { it.comments }
+    val quantity = int("quantity").bindTo { it.quantity }
 }
