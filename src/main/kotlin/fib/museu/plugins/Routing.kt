@@ -35,6 +35,14 @@ fun Application.configureRouting() {
         get("/response") {
             call.respondText("Response from backend!")
         }
+        get("/requestedBookings") {
+            runCatching {
+                call.respondText(repository.getRequestedBookings().toString())
+            }.onFailure {
+                log.error(it)
+                call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
+            }
+        }
         post("/bookings") {
             runCatching {
                 val booking = call.receive<RequestedBookingObject>()
