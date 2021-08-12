@@ -50,9 +50,9 @@ fun Visitor(visitor: fib.museu.domain.datamodels.VisitorObject) = Visitor {
         email = visitor.email
         name = visitor.name
         surname = visitor.surname
-        phone = visitor.phone
+        phone = visitor.phone.toString()
     }
-    center = visitor.center
+    center = visitor.center.toString()
 }
 
 interface RequestedBooking : Entity<RequestedBooking> {

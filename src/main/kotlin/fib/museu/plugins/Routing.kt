@@ -37,7 +37,7 @@ fun Application.configureRouting() {
         }
         get("/requestedBookings") {
             runCatching {
-                call.respondText(repository.getRequestedBookings().toString())
+                call.respond(repository.getRequestedBookings())
             }.onFailure {
                 log.error(it)
                 call.respondText("ERROR", status = HttpStatusCode.InternalServerError)

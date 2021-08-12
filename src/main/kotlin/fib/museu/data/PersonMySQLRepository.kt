@@ -60,7 +60,7 @@ class PersonMySQLRepository(
                     name = get(Persons.name) ?: throw IllegalStateException("Name has to be not null"),
                     surname = get(Persons.surname) ?: throw IllegalStateException("Surname has to be not null"),
                     phone = get(Persons.phone) ?: throw IllegalStateException("Phone has to be not null"),
-                    center = get(Visitors.center) ?: throw IllegalStateException("Center has to be not null"),
+                    center = get(Visitors.center),
                 )
             }
             .first()
