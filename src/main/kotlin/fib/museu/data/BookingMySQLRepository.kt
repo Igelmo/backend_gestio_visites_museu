@@ -42,6 +42,10 @@ class BookingMySQLRepository(
 
     override fun getCompletedVisits(): List<VisitObject> = getVisits().filter { it.completed }
 
+    override fun removeRequestedBooking(day: LocalDate, hour: LocalTime) {
+        ktormDatabase.delete(RequestedBookings) { (it.requestedDay eq day) and (it.requestedHour eq hour) }
+    }
+
     private fun QueryRowSet.asBooking(): RequestedBookingObject {
         val contactEmail = get(RequestedBookings.contactEmail) ?: throw IllegalStateException("contactEmail has to be not null")
 
@@ -64,7 +68,7 @@ class BookingMySQLRepository(
 
         val requestedBooking = getRequestedBooking(day, hour)
 
-        return fib.museu.domain.datamodels.VisitObject(
+        return VisitObject(
             visitDay = day,
             visitHour = hour,
             requestedBookingObject = requestedBooking,

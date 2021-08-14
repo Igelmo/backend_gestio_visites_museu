@@ -12,6 +12,9 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.*
 import org.ktorm.database.Database
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 private val username = "dummy" // provide the username
 private val password = "dummy" // provide the corresponding password
@@ -29,12 +32,15 @@ fun Application.configureRouting() {
     }
 
     routing {
+
         get("/") {
             call.respondText { "Backend is working!" }
         }
+
         get("/response") {
             call.respondText("Response from backend!")
         }
+
         get("/requestedBookings") {
             runCatching {
                 call.respond(repository.getRequestedBookings())
@@ -43,6 +49,18 @@ fun Application.configureRouting() {
                 call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
             }
         }
+
+        delete("/requestedBookings/{requestedDay}/{requestedHour}") {
+            runCatching {
+                val day = LocalDate.parse(call.parameters["requestedDay"], DateTimeFormatter.ISO_LOCAL_DATE)
+                val hour = LocalTime.parse(call.parameters["requestedHour"], DateTimeFormatter.ISO_LOCAL_TIME)
+                repository.removeRequestedBooking(day, hour)
+            }.onFailure {
+                log.error(it)
+                call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
+            }
+        }
+
         post("/bookings") {
             runCatching {
                 val booking = call.receive<RequestedBookingObject>()
@@ -53,6 +71,8 @@ fun Application.configureRouting() {
                 call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
             }
         }
+
+
         get<MyLocation> {
             call.respondText("Location: name=${it.name}, arg1=${it.arg1}, arg2=${it.arg2}")
         }

@@ -12,4 +12,5 @@ interface BookingRepository {
     fun getVisits(): List<VisitObject>
     fun getPendingVisits(): List<VisitObject>
     fun getCompletedVisits(): List<VisitObject>
+    fun removeRequestedBooking(day: LocalDate, hour: LocalTime)
 }
