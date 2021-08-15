@@ -12,17 +12,21 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.*
 import org.ktorm.database.Database
-import java.time.LocalDate
-import java.time.LocalTime
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 private val username = "dummy" // provide the username
 private val password = "dummy" // provide the corresponding password
-private val ktormDatabase = Database.connect(
-    "jdbc:mysql://localhost:3306/mydb?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC",
-    user = username,
-    password = password
-)
+
+
+private val ktormDatabase by lazy {
+    Database.connect(
+        "jdbc:mysql://localhost:3306/mydb?useUnicode=true",
+        user = username,
+        password = password,
+        driver = "com.mysql.cj.jdbc.Driver"
+    )
+}
 
 
 fun Application.configureRouting() {
@@ -50,11 +54,11 @@ fun Application.configureRouting() {
             }
         }
 
-        delete("/requestedBookings/{requestedDay}/{requestedHour}") {
+        delete("/requestedBookings/{requestedDateTime}") {
             runCatching {
-                val day = LocalDate.parse(call.parameters["requestedDay"], DateTimeFormatter.ISO_LOCAL_DATE)
-                val hour = LocalTime.parse(call.parameters["requestedHour"], DateTimeFormatter.ISO_LOCAL_TIME)
-                repository.removeRequestedBooking(day, hour)
+                val dateTime = LocalDateTime.parse(call.parameters["requestedDateTime"], DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                repository.removeRequestedBooking(dateTime)
+                call.respond(HttpStatusCode.Accepted)
             }.onFailure {
                 log.error(it)
                 call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
