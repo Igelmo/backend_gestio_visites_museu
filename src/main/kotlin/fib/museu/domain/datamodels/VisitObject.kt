@@ -2,13 +2,11 @@ package fib.museu.domain.datamodels
 
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import java.time.LocalDate
-import java.time.LocalTime
+import java.time.LocalDateTime
 
 @Serializable
 data class VisitObject(
-    @Contextual val visitDay: LocalDate,
-    @Contextual val visitHour: LocalTime,
+    @Contextual val visitDateTime: LocalDateTime,
     val requestedBookingObject: RequestedBookingObject,
     val guideEmail: String,
     val completed: Boolean,

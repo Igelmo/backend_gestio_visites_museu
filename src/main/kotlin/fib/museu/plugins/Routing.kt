@@ -12,14 +12,21 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.*
 import org.ktorm.database.Database
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 private val username = "dummy" // provide the username
 private val password = "dummy" // provide the corresponding password
-private val ktormDatabase = Database.connect(
-    "jdbc:mysql://localhost:3306/mydb?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC",
-    user = username,
-    password = password
-)
+
+
+private val ktormDatabase by lazy {
+    Database.connect(
+        "jdbc:mysql://localhost:3306/mydb?useUnicode=true",
+        user = username,
+        password = password,
+        driver = "com.mysql.cj.jdbc.Driver"
+    )
+}
 
 
 fun Application.configureRouting() {
@@ -29,12 +36,15 @@ fun Application.configureRouting() {
     }
 
     routing {
+
         get("/") {
             call.respondText { "Backend is working!" }
         }
+
         get("/response") {
             call.respondText("Response from backend!")
         }
+
         get("/requestedBookings") {
             runCatching {
                 call.respond(repository.getRequestedBookings())
@@ -43,6 +53,18 @@ fun Application.configureRouting() {
                 call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
             }
         }
+
+        delete("/requestedBookings/{requestedDateTime}") {
+            runCatching {
+                val dateTime = LocalDateTime.parse(call.parameters["requestedDateTime"], DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                repository.removeRequestedBooking(dateTime)
+                call.respond(HttpStatusCode.Accepted)
+            }.onFailure {
+                log.error(it)
+                call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
+            }
+        }
+
         post("/bookings") {
             runCatching {
                 val booking = call.receive<RequestedBookingObject>()
@@ -53,6 +75,8 @@ fun Application.configureRouting() {
                 call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
             }
         }
+
+
         get<MyLocation> {
             call.respondText("Location: name=${it.name}, arg1=${it.arg1}, arg2=${it.arg2}")
         }

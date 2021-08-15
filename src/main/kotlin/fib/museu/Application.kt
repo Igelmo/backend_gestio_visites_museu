@@ -5,6 +5,7 @@ import fib.museu.plugins.configureRouting
 import fib.museu.plugins.configureSerialization
 import io.ktor.application.*
 import io.ktor.features.*
+import io.ktor.http.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 
@@ -13,6 +14,7 @@ fun main() {
         install(CORS) {
             allowNonSimpleContentTypes = true
             anyHost()
+            method(HttpMethod.Delete)
         }
         configureRouting()
         configureMonitoring()

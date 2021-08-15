@@ -7,8 +7,7 @@ import fib.museu.domain.repository.PersonRepository
 import org.ktorm.database.Database
 import org.ktorm.dsl.*
 import org.ktorm.entity.add
-import java.time.LocalDate
-import java.time.LocalTime
+import java.time.LocalDateTime
 
 
 class BookingMySQLRepository(
@@ -30,8 +29,8 @@ class BookingMySQLRepository(
 
     override fun getRequestedBookings(): List<RequestedBookingObject> = ktormDatabase.from(RequestedBookings).select().map { it.asBooking() }
 
-    override fun getRequestedBooking(day: LocalDate, hour: LocalTime): RequestedBookingObject = ktormDatabase.from(RequestedBookings).select()
-        .where { (RequestedBookings.requestedDay eq day) and (RequestedBookings.requestedHour eq hour) }
+    override fun getRequestedBooking(dateTime: LocalDateTime): RequestedBookingObject = ktormDatabase.from(RequestedBookings).select()
+        .where { RequestedBookings.requestedDateTime eq dateTime }
         .limit(0, 1)
         .map { it.asBooking() }
         .first()
@@ -42,14 +41,23 @@ class BookingMySQLRepository(
 
     override fun getCompletedVisits(): List<VisitObject> = getVisits().filter { it.completed }
 
+    override fun removeRequestedBooking(dateTime: LocalDateTime) {
+        ktormDatabase.from(RequestedBookings).select().where { RequestedBookings.requestedDateTime eq dateTime }.map { it.asBooking() }.forEach { println("${it.requestedDateTime}") }
+        ktormDatabase.from(RequestedBookings).select().where { RequestedBookings.requestedDateTime eq dateTime.minusDays(1) }.map { it.asBooking() }.forEach { println("${it.requestedDateTime}") }
+        ktormDatabase.from(RequestedBookings).select().where { RequestedBookings.requestedDateTime eq dateTime.plusDays(1) }.map { it.asBooking() }.forEach { println("${it.requestedDateTime}") }
+
+        ktormDatabase.delete(RequestedBookings) {
+            it.requestedDateTime eq dateTime
+        }
+    }
+
     private fun QueryRowSet.asBooking(): RequestedBookingObject {
         val contactEmail = get(RequestedBookings.contactEmail) ?: throw IllegalStateException("contactEmail has to be not null")
 
         val visitor = personRepository.getVisitor(contactEmail)
 
         return RequestedBookingObject(
-            requestedDay = get(RequestedBookings.requestedDay) ?: throw IllegalStateException("Missing Primary key day"),
-            requestedHour = get(RequestedBookings.requestedHour) ?: throw IllegalStateException("Missing Primary key hour"),
+            requestedDateTime = get(RequestedBookings.requestedDateTime) ?: throw IllegalStateException("Missing Primary key day"),
             visitor = visitor,
             assistants = get(RequestedBookings.assistants) ?: throw IllegalStateException("Assistants has to be not null"),
             assistantsType = get(RequestedBookings.typeAssistant) ?: throw IllegalStateException("TypeAssistant has to be not null"),
@@ -59,14 +67,12 @@ class BookingMySQLRepository(
     }
 
     private fun QueryRowSet.asVisit(): VisitObject {
-        val day = get(Visits.visitDay) ?: throw IllegalStateException("visitDay has to be not null")
-        val hour = get(Visits.visitHour) ?: throw IllegalStateException("visitHour has to be not null")
+        val dateTime = get(Visits.visitDateTime) ?: throw IllegalStateException("visitDay has to be not null")
 
-        val requestedBooking = getRequestedBooking(day, hour)
+        val requestedBooking = getRequestedBooking(dateTime)
 
-        return fib.museu.domain.datamodels.VisitObject(
-            visitDay = day,
-            visitHour = hour,
+        return VisitObject(
+            visitDateTime = dateTime,
             requestedBookingObject = requestedBooking,
             guideEmail = get(Visits.guideEmail) ?: throw IllegalStateException("Has to be a guide assigned"),
             completed = get(Visits.completed) ?: false,

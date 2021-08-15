@@ -24,8 +24,7 @@ object Visitors : Table<Visitor>("visitor") {
 }
 
 object RequestedBookings : Table<RequestedBooking>("requestedBooking") {
-    val requestedDay = date("requestedDay").primaryKey().bindTo { it.requestedDay }
-    val requestedHour = time("requestedHour").primaryKey().bindTo { it.requestedHour }
+    val requestedDateTime = datetime("requestedDateTime").primaryKey().bindTo { it.requestedDateTime }
     val contactEmail = varchar("contactEmail").references(Visitors) { it.visitor }
     val assistants = int("assistants").bindTo { it.assistants }
     val typeAssistant = enum<AssistantsType>("typeAssistants").bindTo { it.typeAssistant }
@@ -34,16 +33,14 @@ object RequestedBookings : Table<RequestedBooking>("requestedBooking") {
 }
 
 object Visits : Table<Visit>("visit") {
-    val visitDay = date("visitDay").primaryKey().references(RequestedBookings) { it.requestedBooking }
-    val visitHour = time("visitHour").primaryKey().references(RequestedBookings) { it.requestedBooking }
+    val visitDateTime = datetime("visitDateTime").primaryKey().references(RequestedBookings) { it.requestedBooking }
     val guideEmail = varchar("guideEmail").bindTo { it.guideEmail }
     val completed = boolean("completed").bindTo { it.completed }
 }
 
 object Surveys : Table<Survey>("survey") {
     val id = varchar("id").primaryKey().bindTo { it.id }
-    val vDay = date("vDay").references(Visits) { it.visit }
-    val vHour = time("vHour").references(Visits) { it.visit }
+    val vDateTime = datetime("vDateTime").references(Visits) { it.visit }
     val mark = int("mark").bindTo { it.mark }
     val comments = varchar("comments").bindTo { it.comments }
 }

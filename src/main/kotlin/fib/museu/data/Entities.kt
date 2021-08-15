@@ -3,9 +3,9 @@ package fib.museu.data
 import fib.museu.domain.datamodels.AssistantsType
 import fib.museu.domain.datamodels.PieceType
 import fib.museu.domain.datamodels.RequestedBookingObject
+import fib.museu.domain.datamodels.VisitObject
 import org.ktorm.entity.Entity
-import java.time.LocalDate
-import java.time.LocalTime
+import java.time.LocalDateTime
 
 interface Person : Entity<Person> {
     companion object : Entity.Factory<Person>()
@@ -58,8 +58,7 @@ fun Visitor(visitor: fib.museu.domain.datamodels.VisitorObject) = Visitor {
 interface RequestedBooking : Entity<RequestedBooking> {
     companion object : Entity.Factory<RequestedBooking>()
 
-    var requestedDay: LocalDate
-    var requestedHour: LocalTime
+    var requestedDateTime: LocalDateTime
     var visitor: Visitor
     var assistants: Int
     var typeAssistant: AssistantsType
@@ -69,8 +68,7 @@ interface RequestedBooking : Entity<RequestedBooking> {
 
 fun RequestedBooking(requestedBookingObject: RequestedBookingObject) = RequestedBooking {
     visitor = Visitor(requestedBookingObject.visitor)
-    requestedDay = requestedBookingObject.requestedDay
-    requestedHour = requestedBookingObject.requestedHour
+    requestedDateTime = requestedBookingObject.requestedDateTime
     assistants = requestedBookingObject.assistants
     typeAssistant = requestedBookingObject.assistantsType
     comments = requestedBookingObject.comments
@@ -80,16 +78,14 @@ fun RequestedBooking(requestedBookingObject: RequestedBookingObject) = Requested
 interface Visit : Entity<Visit> {
     companion object : Entity.Factory<Visit>()
 
-    var visitDay: LocalDate
-    var visitHour: LocalTime
+    var visitDateTime: LocalDateTime
     var requestedBooking: RequestedBooking
     var guideEmail: String
     var completed: Boolean
 }
 
-fun Visit(visit: fib.museu.domain.datamodels.VisitObject) = Visit {
-    visitDay = visit.visitDay
-    visitHour = visit.visitHour
+fun Visit(visit: VisitObject) = Visit {
+    visitDateTime = visit.visitDateTime
     requestedBooking = RequestedBooking(visit.requestedBookingObject)
     guideEmail = visit.guideEmail
     completed = visit.completed
