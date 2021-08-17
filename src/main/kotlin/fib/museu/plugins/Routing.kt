@@ -2,6 +2,7 @@ package fib.museu.plugins
 
 import fib.museu.data.BookingMySQLRepository
 import fib.museu.data.PersonMySQLRepository
+import fib.museu.domain.datamodels.Email
 import fib.museu.domain.datamodels.RequestedBookingObject
 import fib.museu.domain.datamodels.VisitObject
 import fib.museu.domain.repository.BookingRepository
@@ -16,15 +17,11 @@ import org.ktorm.database.Database
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-private val username = "dummy" // provide the username
-private val password = "dummy" // provide the corresponding password
-
-
 private val ktormDatabase by lazy {
     Database.connect(
         "jdbc:mysql://localhost:3306/mydb?useUnicode=true",
-        user = username,
-        password = password,
+        user = "databaseUsername",
+        password = "databasePassword",
         driver = "com.mysql.cj.jdbc.Driver"
     )
 }
@@ -32,6 +29,7 @@ private val ktormDatabase by lazy {
 
 fun Application.configureRouting() {
     val repository: BookingRepository = BookingMySQLRepository(ktormDatabase, PersonMySQLRepository(ktormDatabase))
+    val email = Email()
 
     install(Locations) {
     }
@@ -58,8 +56,10 @@ fun Application.configureRouting() {
         delete("/requestedBookings/{requestedDateTime}") {
             runCatching {
                 val dateTime = LocalDateTime.parse(call.parameters["requestedDateTime"], DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                val requestedBooking = repository.getRequestedBooking(dateTime)
                 repository.removeRequestedBooking(dateTime)
                 call.respond(HttpStatusCode.Accepted)
+                email.sendEmail(requestedBooking, false)
             }.onFailure {
                 log.error(it)
                 call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
@@ -82,6 +82,7 @@ fun Application.configureRouting() {
                 val visit = call.receive<VisitObject>()
                 repository.setNewVisit(visit)
                 call.respondText("Reserva acceptada correctament", status = HttpStatusCode.Created)
+                email.sendEmail(visit.requestedBooking, true)
             }.onFailure {
                 log.error(it)
                 call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
