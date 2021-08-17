@@ -86,7 +86,7 @@ interface Visit : Entity<Visit> {
 
 fun Visit(visit: VisitObject) = Visit {
     visitDateTime = visit.visitDateTime
-    requestedBooking = RequestedBooking(visit.requestedBookingObject)
+    requestedBooking = RequestedBooking(visit.requestedBooking)
     guideEmail = visit.guideEmail
     completed = visit.completed
 }

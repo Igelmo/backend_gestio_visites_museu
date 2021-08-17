@@ -21,13 +21,21 @@ class BookingMySQLRepository(
         runCatching {
             personRepository.setVisitor(requestedBookingObject.visitor)
         }
-
         ktormDatabase.bookings.add(requestedBooking)
-
-
     }
 
-    override fun getRequestedBookings(): List<RequestedBookingObject> = ktormDatabase.from(RequestedBookings).select().map { it.asBooking() }
+    override fun setNewVisit(visitObject: VisitObject) {
+        val visit = Visit(visitObject)
+        ktormDatabase.visits.add(visit)
+        ktormDatabase.update(RequestedBookings) {
+            set(it.accepted, true)
+            where { it.requestedDateTime eq visitObject.visitDateTime }
+        }
+    }
+
+    override fun getRequestedBookings(): List<RequestedBookingObject> = ktormDatabase.from(RequestedBookings).select()
+        .where { !RequestedBookings.accepted }
+        .map { it.asBooking() }
 
     override fun getRequestedBooking(dateTime: LocalDateTime): RequestedBookingObject = ktormDatabase.from(RequestedBookings).select()
         .where { RequestedBookings.requestedDateTime eq dateTime }
@@ -42,10 +50,6 @@ class BookingMySQLRepository(
     override fun getCompletedVisits(): List<VisitObject> = getVisits().filter { it.completed }
 
     override fun removeRequestedBooking(dateTime: LocalDateTime) {
-        ktormDatabase.from(RequestedBookings).select().where { RequestedBookings.requestedDateTime eq dateTime }.map { it.asBooking() }.forEach { println("${it.requestedDateTime}") }
-        ktormDatabase.from(RequestedBookings).select().where { RequestedBookings.requestedDateTime eq dateTime.minusDays(1) }.map { it.asBooking() }.forEach { println("${it.requestedDateTime}") }
-        ktormDatabase.from(RequestedBookings).select().where { RequestedBookings.requestedDateTime eq dateTime.plusDays(1) }.map { it.asBooking() }.forEach { println("${it.requestedDateTime}") }
-
         ktormDatabase.delete(RequestedBookings) {
             it.requestedDateTime eq dateTime
         }
@@ -73,7 +77,7 @@ class BookingMySQLRepository(
 
         return VisitObject(
             visitDateTime = dateTime,
-            requestedBookingObject = requestedBooking,
+            requestedBooking = requestedBooking,
             guideEmail = get(Visits.guideEmail) ?: throw IllegalStateException("Has to be a guide assigned"),
             completed = get(Visits.completed) ?: false,
         )

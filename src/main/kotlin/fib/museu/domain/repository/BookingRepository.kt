@@ -6,6 +6,7 @@ import java.time.LocalDateTime
 
 interface BookingRepository {
     fun setNewBooking(requestedBookingObject: RequestedBookingObject)
+    fun setNewVisit(visitObject: VisitObject)
     fun getRequestedBookings(): List<RequestedBookingObject>
     fun getRequestedBooking(dateTime: LocalDateTime): RequestedBookingObject
     fun getVisits(): List<VisitObject>

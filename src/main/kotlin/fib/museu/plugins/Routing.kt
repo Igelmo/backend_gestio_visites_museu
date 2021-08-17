@@ -3,6 +3,7 @@ package fib.museu.plugins
 import fib.museu.data.BookingMySQLRepository
 import fib.museu.data.PersonMySQLRepository
 import fib.museu.domain.datamodels.RequestedBookingObject
+import fib.museu.domain.datamodels.VisitObject
 import fib.museu.domain.repository.BookingRepository
 import io.ktor.application.*
 import io.ktor.http.*
@@ -70,6 +71,17 @@ fun Application.configureRouting() {
                 val booking = call.receive<RequestedBookingObject>()
                 repository.setNewBooking(booking)
                 call.respondText("Reserva feta correctament", status = HttpStatusCode.Created)
+            }.onFailure {
+                log.error(it)
+                call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
+            }
+        }
+
+        post("/visits") {
+            runCatching {
+                val visit = call.receive<VisitObject>()
+                repository.setNewVisit(visit)
+                call.respondText("Reserva acceptada correctament", status = HttpStatusCode.Created)
             }.onFailure {
                 log.error(it)
                 call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
