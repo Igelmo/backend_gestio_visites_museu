@@ -20,8 +20,8 @@ import java.time.format.DateTimeFormatter
 private val ktormDatabase by lazy {
     Database.connect(
         "jdbc:mysql://localhost:3306/mydb?useUnicode=true",
-        user = "databaseUsername",
-        password = "databasePassword",
+        user = "dummy",
+        password = "dummy",
         driver = "com.mysql.cj.jdbc.Driver"
     )
 }
@@ -47,6 +47,15 @@ fun Application.configureRouting() {
         get("/requestedBookings") {
             runCatching {
                 call.respond(repository.getRequestedBookings())
+            }.onFailure {
+                log.error(it)
+                call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
+            }
+        }
+
+        get("/pendingVisits") {
+            runCatching {
+                call.respond(repository.getPendingVisits())
             }.onFailure {
                 log.error(it)
                 call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
