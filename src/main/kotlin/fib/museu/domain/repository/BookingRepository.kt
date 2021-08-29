@@ -6,11 +6,14 @@ import java.time.LocalDateTime
 
 interface BookingRepository {
     fun setNewBooking(requestedBookingObject: RequestedBookingObject)
-    fun setNewVisit(visitObject: VisitObject)
     fun getRequestedBookings(): List<RequestedBookingObject>
     fun getRequestedBooking(dateTime: LocalDateTime): RequestedBookingObject
+    fun removeRequestedBooking(dateTime: LocalDateTime)
+
+    fun setNewVisit(visitObject: VisitObject)
     fun getVisits(): List<VisitObject>
+    fun getVisit(dateTime: LocalDateTime): VisitObject
     fun getPendingVisits(): List<VisitObject>
     fun getCompletedVisits(): List<VisitObject>
-    fun removeRequestedBooking(dateTime: LocalDateTime)
+    fun removeVisit(dateTime: LocalDateTime)
 }

@@ -68,7 +68,20 @@ fun Application.configureRouting() {
                 val requestedBooking = repository.getRequestedBooking(dateTime)
                 repository.removeRequestedBooking(dateTime)
                 call.respond(HttpStatusCode.Accepted)
-                email.sendEmail(requestedBooking, false)
+                email.sendEmail(requestedBooking, 1)
+            }.onFailure {
+                log.error(it)
+                call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
+            }
+        }
+
+        delete("/visits/{requestedDateTime}") {
+            runCatching {
+                val dateTime = LocalDateTime.parse(call.parameters["requestedDateTime"], DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                val visit = repository.getVisit(dateTime)
+                repository.removeVisit(dateTime)
+                call.respond(HttpStatusCode.Accepted)
+                email.sendEmail(visit.requestedBooking, 2)
             }.onFailure {
                 log.error(it)
                 call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
@@ -91,7 +104,7 @@ fun Application.configureRouting() {
                 val visit = call.receive<VisitObject>()
                 repository.setNewVisit(visit)
                 call.respondText("Reserva acceptada correctament", status = HttpStatusCode.Created)
-                email.sendEmail(visit.requestedBooking, true)
+                email.sendEmail(visit.requestedBooking, 0)
             }.onFailure {
                 log.error(it)
                 call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
