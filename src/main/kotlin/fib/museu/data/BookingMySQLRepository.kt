@@ -45,6 +45,12 @@ class BookingMySQLRepository(
 
     override fun getVisits(): List<VisitObject> = ktormDatabase.from(Visits).select().map { it.asVisit() }
 
+    override fun getVisit(dateTime: LocalDateTime): VisitObject = ktormDatabase.from(Visits).select()
+        .where { Visits.visitDateTime eq dateTime }
+        .limit(0, 1)
+        .map { it.asVisit() }
+        .first()
+
     override fun getPendingVisits(): List<VisitObject> = getVisits().filter { !it.completed }
 
     override fun getCompletedVisits(): List<VisitObject> = getVisits().filter { it.completed }
@@ -53,6 +59,13 @@ class BookingMySQLRepository(
         ktormDatabase.delete(RequestedBookings) {
             it.requestedDateTime eq dateTime
         }
+    }
+
+    override fun removeVisit(dateTime: LocalDateTime) {
+        ktormDatabase.delete(Visits) {
+            it.visitDateTime eq dateTime
+        }
+        removeRequestedBooking(dateTime)
     }
 
     private fun QueryRowSet.asBooking(): RequestedBookingObject {
