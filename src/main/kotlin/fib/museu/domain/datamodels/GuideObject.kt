@@ -1,10 +1,11 @@
 package fib.museu.domain.datamodels
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class GuideObject(
-    val email: String,
-    val name: String,
-    val surname: String,
-    val phone: String,
+    val guideEmail: String,
+    val person: PersonObject,
     val workedHours: Int,
     val username: String,
     val password: String,

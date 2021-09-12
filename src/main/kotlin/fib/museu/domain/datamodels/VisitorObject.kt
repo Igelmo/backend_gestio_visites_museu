@@ -4,9 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class VisitorObject(
-    val email: String,
-    val name: String,
-    val surname: String,
-    val phone: String? = null,
-    val center: String? = null,
+    val visitorEmail: String,
+    val person: PersonObject,
+    val center: String,
 )

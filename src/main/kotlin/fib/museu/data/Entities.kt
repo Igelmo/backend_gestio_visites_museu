@@ -1,9 +1,6 @@
 package fib.museu.data
 
-import fib.museu.domain.datamodels.AssistantsType
-import fib.museu.domain.datamodels.PieceType
-import fib.museu.domain.datamodels.RequestedBookingObject
-import fib.museu.domain.datamodels.VisitObject
+import fib.museu.domain.datamodels.*
 import org.ktorm.entity.Entity
 import java.time.LocalDateTime
 
@@ -16,6 +13,13 @@ interface Person : Entity<Person> {
     var phone: String
 }
 
+fun Person(personObject: PersonObject) = Person {
+    email = personObject.email
+    name = personObject.name
+    surname = personObject.surname
+    phone = personObject.phone
+}
+
 interface Guide : Entity<Guide> {
     companion object : Entity.Factory<Guide>()
 
@@ -26,13 +30,8 @@ interface Guide : Entity<Guide> {
 
 }
 
-fun Guide(guide: fib.museu.domain.datamodels.GuideObject) = Guide {
-    person = Person {
-        email = guide.email
-        name = guide.name
-        surname = guide.surname
-        phone = guide.phone
-    }
+fun Guide(guide: GuideObject) = Guide {
+    person = Person(guide.person)
     username = guide.username
     password = guide.password
     workedHours = guide.workedHours
@@ -45,14 +44,9 @@ interface Visitor : Entity<Visitor> {
     var center: String
 }
 
-fun Visitor(visitor: fib.museu.domain.datamodels.VisitorObject) = Visitor {
-    person = Person {
-        email = visitor.email
-        name = visitor.name
-        surname = visitor.surname
-        phone = visitor.phone.toString()
-    }
-    center = visitor.center.toString()
+fun Visitor(visitor: VisitorObject) = Visitor {
+    person = Person(visitor.person)
+    center = visitor.center
 }
 
 interface RequestedBooking : Entity<RequestedBooking> {

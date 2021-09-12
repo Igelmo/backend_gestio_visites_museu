@@ -68,7 +68,7 @@ fun Application.configureRouting() {
                 val requestedBooking = repository.getRequestedBooking(dateTime)
                 repository.removeRequestedBooking(dateTime)
                 call.respond(HttpStatusCode.Accepted)
-                email.sendEmail(requestedBooking, 1)
+                //email.sendEmail(requestedBooking, 1)
             }.onFailure {
                 log.error(it)
                 call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
@@ -81,7 +81,7 @@ fun Application.configureRouting() {
                 val visit = repository.getVisit(dateTime)
                 repository.removeVisit(dateTime)
                 call.respond(HttpStatusCode.Accepted)
-                email.sendEmail(visit.requestedBooking, 2)
+                //email.sendEmail(visit.requestedBooking, 2)
             }.onFailure {
                 log.error(it)
                 call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
@@ -104,7 +104,7 @@ fun Application.configureRouting() {
                 val visit = call.receive<VisitObject>()
                 repository.setNewVisit(visit)
                 call.respondText("Reserva acceptada correctament", status = HttpStatusCode.Created)
-                email.sendEmail(visit.requestedBooking, 0)
+                //email.sendEmail(visit.requestedBooking, 0)
             }.onFailure {
                 log.error(it)
                 call.respondText("ERROR", status = HttpStatusCode.InternalServerError)

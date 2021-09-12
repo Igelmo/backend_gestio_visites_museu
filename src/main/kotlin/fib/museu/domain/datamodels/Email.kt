@@ -16,13 +16,13 @@ class Email {
         val visitor = requestedBooking.visitor
         email.setAuthenticator(DefaultAuthenticator("gmailUsername", "gmailPassword"))
         email.setFrom(System.getProperty("gmailUsername"))
-        email.addTo(visitor.email)
+        email.addTo(visitor.visitorEmail)
 
         when (type) {
             0 -> {
                 email.subject = "Acceptació visita museu de la FIB"
                 email.setMsg(
-                    "Hola " + visitor.name + ",\n \n" +
+                    "Hola " + visitor.visitorEmail + ",\n \n" +
                             "S'ha acceptat la visita que havieu demanat pel dia " +
                             requestedBooking.requestedDateTime.dayOfMonth + " a les " +
                             requestedBooking.requestedDateTime.toLocalTime() + ".\n" +
@@ -39,7 +39,7 @@ class Email {
             1 -> {
                 email.subject = "Denegació visita museu de la FIB"
                 email.setMsg(
-                    "Hola " + visitor.name + ",\n \n" +
+                    "Hola " + visitor.person.name + ",\n \n" +
                             "S'ha denegat la visita que havieu demanat pel dia " +
                             requestedBooking.requestedDateTime.dayOfMonth + " a les " +
                             requestedBooking.requestedDateTime.toLocalTime() + ".\n \n" +
@@ -55,7 +55,7 @@ class Email {
             else -> {
                 email.subject = "Cancel·lació visita museu de la FIB"
                 email.setMsg(
-                    "Hola " + visitor.name + ",\n \n" +
+                    "Hola " + visitor.person.name + ",\n \n" +
                             "S'ha cancel·lat la visita que havieu demanat pel dia " +
                             requestedBooking.requestedDateTime.dayOfMonth + " a les " +
                             requestedBooking.requestedDateTime.toLocalTime() + ".\n \n" +
