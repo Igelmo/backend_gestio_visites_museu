@@ -21,7 +21,7 @@ private val ktormDatabase by lazy {
     Database.connect(
         "jdbc:mysql://localhost:3306/mydb?useUnicode=true",
         user = "dummy",
-        password = "dummy",
+        password = "#DummyDummy1",
         driver = "com.mysql.cj.jdbc.Driver"
     )
 }
