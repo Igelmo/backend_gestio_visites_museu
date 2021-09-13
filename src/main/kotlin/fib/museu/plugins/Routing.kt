@@ -19,9 +19,9 @@ import java.time.format.DateTimeFormatter
 
 private val ktormDatabase by lazy {
     Database.connect(
-        "jdbc:mysql://localhost:3306/mydb?useUnicode=true",
+        "jdbc:mysql://34.65.194.244:3306/mydb?useUnicode=true",
         user = "dummy",
-        password = "#DummyDummy1",
+        password = "dummy",
         driver = "com.mysql.cj.jdbc.Driver"
     )
 }
