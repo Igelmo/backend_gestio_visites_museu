@@ -1,1 +1,1 @@
-web: java -jar build/libs/backend_gestio_visites_museu.jar
+web: ./build/install/backend_gestio_visites_museu/bin/backend_gestio_visites_museu
