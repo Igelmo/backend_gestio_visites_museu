@@ -9,7 +9,11 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version "1.5.20"
 }
 
-tasks.register("stage") {
+tasks.create("stage") {
+    dependsOn("installDist")
+}
+
+tasks.register("stag") {
     dependsOn("build")
 }
 

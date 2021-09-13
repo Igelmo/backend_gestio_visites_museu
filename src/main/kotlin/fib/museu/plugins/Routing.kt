@@ -19,9 +19,9 @@ import java.time.format.DateTimeFormatter
 
 private val ktormDatabase by lazy {
     Database.connect(
-        "jdbc:mysql://localhost:3306/mydb?useUnicode=true",
+        "jdbc:mysql://34.65.194.244:3306/mydb?useUnicode=true",
         user = "dummy",
-        password = "#DummyDummy1",
+        password = "dummy",
         driver = "com.mysql.cj.jdbc.Driver"
     )
 }
@@ -68,7 +68,7 @@ fun Application.configureRouting() {
                 val requestedBooking = repository.getRequestedBooking(dateTime)
                 repository.removeRequestedBooking(dateTime)
                 call.respond(HttpStatusCode.Accepted)
-                email.sendEmail(requestedBooking, 1)
+                //email.sendEmail(requestedBooking, 1)
             }.onFailure {
                 log.error(it)
                 call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
@@ -81,7 +81,7 @@ fun Application.configureRouting() {
                 val visit = repository.getVisit(dateTime)
                 repository.removeVisit(dateTime)
                 call.respond(HttpStatusCode.Accepted)
-                email.sendEmail(visit.requestedBooking, 2)
+                //email.sendEmail(visit.requestedBooking, 2)
             }.onFailure {
                 log.error(it)
                 call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
@@ -104,7 +104,7 @@ fun Application.configureRouting() {
                 val visit = call.receive<VisitObject>()
                 repository.setNewVisit(visit)
                 call.respondText("Reserva acceptada correctament", status = HttpStatusCode.Created)
-                email.sendEmail(visit.requestedBooking, 0)
+                //email.sendEmail(visit.requestedBooking, 0)
             }.onFailure {
                 log.error(it)
                 call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
