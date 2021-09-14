@@ -13,6 +13,9 @@ fun main() {
     embeddedServer(Netty, port = 8080, host = "0.0.0.0") {
         install(CORS) {
             allowNonSimpleContentTypes = true
+            header(HttpHeaders.AccessControlAllowHeaders)
+            header(HttpHeaders.AccessControlAllowOrigin)
+            header(HttpHeaders.ContentType)
             allowCredentials = true
             anyHost()
             method(HttpMethod.Delete)
