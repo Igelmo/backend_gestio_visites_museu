@@ -10,16 +10,16 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 
 fun main() {
-    embeddedServer(Netty, port = System.getenv("PORT")?.toInt()?: 8080, host = "backend-museu.herokuapp.com" ) {
-        install(CORS) {
-            allowNonSimpleContentTypes = true
-            header(HttpHeaders.AccessControlAllowHeaders)
-            header(HttpHeaders.AccessControlAllowOrigin)
-            header(HttpHeaders.ContentType)
-            allowCredentials = true
-            anyHost()
-            method(HttpMethod.Delete)
-        }
+    embeddedServer(Netty, port = System.getenv("PORT")?.toInt()?: 8080 ) {
+//        install(CORS) {
+//            allowNonSimpleContentTypes = true
+//            header(HttpHeaders.AccessControlAllowHeaders)
+//            header(HttpHeaders.AccessControlAllowOrigin)
+//            header(HttpHeaders.ContentType)
+//            allowCredentials = true
+//            anyHost()
+//            method(HttpMethod.Delete)
+//        }
         configureRouting()
         configureMonitoring()
         configureSerialization()
