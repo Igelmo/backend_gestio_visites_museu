@@ -1,1 +1,1 @@
-web: ./build/install/backend-gestio-visites-museu/bin/backend-gestio-visites-museu
+web: ./build/install/backend-museu/bin/backend-museu

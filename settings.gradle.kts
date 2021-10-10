@@ -1,1 +1,1 @@
-rootProject.name = "backend_gestio_visites_museu"
+rootProject.name = "backend-museu"

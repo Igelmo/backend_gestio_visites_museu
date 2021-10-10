@@ -10,7 +10,7 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 
 fun main() {
-    embeddedServer(Netty, port = System.getenv("PORT").toInt()) {
+    embeddedServer(Netty, port = System.getenv("PORT")?.toInt()?: 8080 ) {
         install(CORS) {
             allowNonSimpleContentTypes = true
             header(HttpHeaders.AccessControlAllowHeaders)
