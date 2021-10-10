@@ -19,9 +19,9 @@ import java.time.format.DateTimeFormatter
 
 private val ktormDatabase by lazy {
     Database.connect(
-        "jdbc:mysql://34.65.194.244:3306/mydb?useUnicode=true",
-        user = "dummy",
-        password = "dummy",
+        "jdbc:mysql://localhost:3306/mydb?useUnicode=true",
+        user ="dummy",
+        password = "#DummyDummy1",
         driver = "com.mysql.cj.jdbc.Driver"
     )
 }
@@ -68,7 +68,7 @@ fun Application.configureRouting() {
                 val requestedBooking = repository.getRequestedBooking(dateTime)
                 repository.removeRequestedBooking(dateTime)
                 call.respond(HttpStatusCode.Accepted)
-                //email.sendEmail(requestedBooking, 1)
+//                email.sendEmail(requestedBooking, 1)
             }.onFailure {
                 log.error(it)
                 call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
@@ -81,7 +81,7 @@ fun Application.configureRouting() {
                 val visit = repository.getVisit(dateTime)
                 repository.removeVisit(dateTime)
                 call.respond(HttpStatusCode.Accepted)
-                //email.sendEmail(visit.requestedBooking, 2)
+//                email.sendEmail(visit.requestedBooking, 2)
             }.onFailure {
                 log.error(it)
                 call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
@@ -92,7 +92,7 @@ fun Application.configureRouting() {
             runCatching {
                 val booking = call.receive<RequestedBookingObject>()
                 repository.setNewBooking(booking)
-                call.respondText("Reserva feta correctament", status = HttpStatusCode.Created)
+                call.respondText("Solicitud feta amb exit", status = HttpStatusCode.Created)
             }.onFailure {
                 log.error(it)
                 call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
@@ -104,35 +104,11 @@ fun Application.configureRouting() {
                 val visit = call.receive<VisitObject>()
                 repository.setNewVisit(visit)
                 call.respondText("Reserva acceptada correctament", status = HttpStatusCode.Created)
-                //email.sendEmail(visit.requestedBooking, 0)
+//                email.sendEmail(visit.requestedBooking, 0)
             }.onFailure {
                 log.error(it)
                 call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
             }
         }
-
-
-        get<MyLocation> {
-            call.respondText("Location: name=${it.name}, arg1=${it.arg1}, arg2=${it.arg2}")
-        }
-        // Register nested routes
-        get<Type.Edit> {
-            call.respondText("Inside $it")
-        }
-        get<Type.List> {
-            call.respondText("Inside $it")
-        }
     }
-}
-
-@Location("/location/{name}")
-class MyLocation(val name: String, val arg1: Int = 42, val arg2: String = "default")
-
-@Location("/type/{name}")
-data class Type(val name: String) {
-    @Location("/edit")
-    data class Edit(val type: Type)
-
-    @Location("/list/{page}")
-    data class List(val type: Type, val page: Int)
 }
