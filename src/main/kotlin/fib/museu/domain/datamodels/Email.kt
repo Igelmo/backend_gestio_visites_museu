@@ -14,8 +14,8 @@ class Email {
 
     fun sendEmail(requestedBooking: RequestedBookingObject, type: Int) {
         val visitor = requestedBooking.visitor
-        email.setAuthenticator(DefaultAuthenticator("gmailUsername", "gmailPassword"))
-        email.setFrom(System.getProperty("gmailUsername"))
+        email.setAuthenticator(DefaultAuthenticator("Username", "Password"))
+        email.setFrom("Username")
         email.addTo(visitor.visitorEmail)
 
         when (type) {
@@ -68,7 +68,8 @@ class Email {
                 )
             }
         }
-        email.send()
+        email.buildMimeMessage()
+        email.sendMimeMessage()
     }
 }
 
