@@ -1,21 +1,11 @@
 package fib.museu.domain.datamodels
 
-import org.apache.commons.mail.DefaultAuthenticator
 import org.apache.commons.mail.SimpleEmail
 
-class Email {
-    private val email = SimpleEmail()
-
-    init {
-        email.hostName = "smtp.gmail.com"
-        email.setSmtpPort(587)
-        email.isSSLOnConnect = true
-    }
+class EmailSender(private val email: SimpleEmail) {
 
     fun sendEmail(requestedBooking: RequestedBookingObject, type: Int) {
         val visitor = requestedBooking.visitor
-        email.setAuthenticator(DefaultAuthenticator("Username", "Password"))
-        email.setFrom("Username")
         email.addTo(visitor.visitorEmail)
 
         when (type) {

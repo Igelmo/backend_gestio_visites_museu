@@ -1,5 +1,6 @@
 package fib.museu
 
+import fib.museu.di.mainModule
 import fib.museu.plugins.configureMonitoring
 import fib.museu.plugins.configureRouting
 import fib.museu.plugins.configureSerialization
@@ -8,9 +9,17 @@ import io.ktor.features.*
 import io.ktor.http.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import org.koin.fileProperties
+import org.koin.ktor.ext.Koin
+import org.koin.logger.SLF4JLogger
 
 fun main() {
-    embeddedServer(Netty, port = System.getenv("PORT")?.toInt()?: 8080 ) {
+    embeddedServer(Netty, port = System.getenv("PORT")?.toInt() ?: 8080) {
+        install(Koin) {
+            SLF4JLogger()
+            fileProperties()
+            modules(mainModule)
+        }
         install(CORS) {
             allowNonSimpleContentTypes = true
             header(HttpHeaders.AccessControlAllowHeaders)
@@ -23,5 +32,6 @@ fun main() {
         configureRouting()
         configureMonitoring()
         configureSerialization()
+        environment.config
     }.start(wait = true)
 }

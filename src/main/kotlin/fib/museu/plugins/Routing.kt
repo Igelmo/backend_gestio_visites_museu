@@ -1,8 +1,6 @@
 package fib.museu.plugins
 
-import fib.museu.data.BookingMySQLRepository
-import fib.museu.data.PersonMySQLRepository
-import fib.museu.domain.datamodels.Email
+import fib.museu.domain.datamodels.EmailSender
 import fib.museu.domain.datamodels.RequestedBookingObject
 import fib.museu.domain.datamodels.VisitObject
 import fib.museu.domain.repository.BookingRepository
@@ -13,23 +11,13 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.*
-import org.ktorm.database.Database
+import org.koin.ktor.ext.inject
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-private val ktormDatabase by lazy {
-    Database.connect(
-        "jdbc:mysql://localhost:3306/mydb?useUnicode=true",
-        user ="dummy",
-        password = "#DummyDummy1",
-        driver = "com.mysql.cj.jdbc.Driver"
-    )
-}
-
-
 fun Application.configureRouting() {
-    val repository: BookingRepository = BookingMySQLRepository(ktormDatabase, PersonMySQLRepository(ktormDatabase))
-    val email = Email()
+    val repository by inject<BookingRepository>()
+    val email by inject<EmailSender>()
 
     install(Locations) {
     }
