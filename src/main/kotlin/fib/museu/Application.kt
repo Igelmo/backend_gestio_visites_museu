@@ -1,6 +1,8 @@
 package fib.museu
 
 import fib.museu.di.mainModule
+import fib.museu.domain.repository.BookingRepository
+import fib.museu.domain.repository.EmailRepository
 import fib.museu.plugins.configureMonitoring
 import fib.museu.plugins.configureRouting
 import fib.museu.plugins.configureSerialization
@@ -11,6 +13,7 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import org.koin.fileProperties
 import org.koin.ktor.ext.Koin
+import org.koin.ktor.ext.inject
 import org.koin.logger.SLF4JLogger
 
 fun main() {
@@ -29,7 +32,10 @@ fun main() {
             anyHost()
             method(HttpMethod.Delete)
         }
-        configureRouting()
+
+        val bookingRepository by inject<BookingRepository>()
+        val emailRepository by inject<EmailRepository>()
+        configureRouting(bookingRepository, emailRepository)
         configureMonitoring()
         configureSerialization()
         environment.config

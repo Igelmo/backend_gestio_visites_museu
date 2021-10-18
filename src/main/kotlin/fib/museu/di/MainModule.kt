@@ -2,8 +2,9 @@ package fib.museu.di
 
 import fib.museu.data.BookingMySQLRepository
 import fib.museu.data.PersonMySQLRepository
-import fib.museu.domain.datamodels.EmailSender
+import fib.museu.data.email.SimpleEmailRepository
 import fib.museu.domain.repository.BookingRepository
+import fib.museu.domain.repository.EmailRepository
 import fib.museu.domain.repository.PersonRepository
 import org.apache.commons.mail.DefaultAuthenticator
 import org.apache.commons.mail.SimpleEmail
@@ -25,8 +26,8 @@ val mainModule = module {
             driver = "com.mysql.cj.jdbc.Driver"
         )
     }
-    single {
-        EmailSender(get())
+    single<EmailRepository> {
+        SimpleEmailRepository(get())
     }
     single {
         SimpleEmail().apply {
