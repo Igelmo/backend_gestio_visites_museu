@@ -24,7 +24,7 @@ class RoutingKtTest {
     private val visit = VisitObject(booking.requestedDateTime, booking, "fakeguide@fake.fake", false)
 
     @Test
-    fun `basic routing uri is working` () {
+    fun `basic routing uri is working`() {
         withTestApplication({ configureRouting(bookingRepository, emailRepository) }) {
             handleRequest(HttpMethod.Get, "/").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
@@ -85,28 +85,34 @@ class RoutingKtTest {
 
     @Test
     fun `requestedBookings should return an accepted status if removeRequestedBooking returns doesnt fail`() {
-        every { bookingRepository.removeRequestedBooking(LocalDateTime.now()) } returns Unit
+        every { bookingRepository.removeRequestedBooking(any()) } returns Unit
+        every { bookingRepository.getRequestedBooking(any()) } returns booking
+        every { emailRepository.sendEmail(booking, 1) } returns Unit
 
+        val requestedDateTime = LocalDateTime.now().toString()
         withTestApplication({
             configureSerialization()
             configureRouting(bookingRepository, emailRepository)
         }) {
-            handleRequest(HttpMethod.Delete, "/requestedBookings/{requestedDateTime}").apply {
+            with(handleRequest(HttpMethod.Delete, "/requestedBookings/$requestedDateTime")) {
                 assertEquals(HttpStatusCode.Accepted, response.status())
             }
         }
     }
 
     @Test
-    fun `requestedBookings should return a not found status if datetime not found when removeRequestedBooking`() {
-        every { bookingRepository.removeRequestedBooking(LocalDateTime.now()) } returns Unit
+    fun `requestedBookings should return an error status if removeRequestedBooking fails`() {
+        every { bookingRepository.removeRequestedBooking(any()) } throws Exception("Test")
+        every { bookingRepository.getRequestedBooking(any()) } returns booking
+        every { emailRepository.sendEmail(booking, 1) } returns Unit
 
+        val requestedDateTime = LocalDateTime.now().toString()
         withTestApplication({
             configureSerialization()
             configureRouting(bookingRepository, emailRepository)
         }) {
-            handleRequest(HttpMethod.Delete, "/requestedBookings/{requestedDateTime}").apply {
-                assertEquals(HttpStatusCode.NotFound, response.status())
+            handleRequest(HttpMethod.Delete, "/requestedBookings/$requestedDateTime").apply {
+                assertEquals(HttpStatusCode.InternalServerError, response.status())
             }
         }
     }
@@ -178,6 +184,7 @@ class RoutingKtTest {
     @Test
     fun `visits should return created if setNewVisit doesnt fail`() {
         every { bookingRepository.setNewVisit(any()) } returns Unit
+        every { emailRepository.sendEmail(visit.requestedBooking, 0) } returns Unit
 
         withTestApplication({
             configureSerialization()
@@ -197,6 +204,40 @@ class RoutingKtTest {
         addHeader(HttpHeaders.Accept, ContentType.Text.Plain.contentType)
         addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
         setBody(Json.encodeToString(visitObject))
+    }
+
+    @Test
+    fun `visits should return an accepted status if removeVisit returns doesnt fail`() {
+        every { bookingRepository.removeVisit(any()) } returns Unit
+        every { bookingRepository.getVisit(any()) } returns visit
+        every { emailRepository.sendEmail(visit.requestedBooking, 2) } returns Unit
+
+        val requestedDateTime = LocalDateTime.now().toString()
+        withTestApplication({
+            configureSerialization()
+            configureRouting(bookingRepository, emailRepository)
+        }) {
+            with(handleRequest(HttpMethod.Delete, "/visits/$requestedDateTime")) {
+                assertEquals(HttpStatusCode.Accepted, response.status())
+            }
+        }
+    }
+
+    @Test
+    fun `visit should return an error status if removeVisit fails`() {
+        every { bookingRepository.removeVisit(any()) } throws Exception("Test")
+        every { bookingRepository.getVisit(any()) } returns visit
+        every { emailRepository.sendEmail(visit.requestedBooking, 2) } returns Unit
+
+        val requestedDateTime = LocalDateTime.now().toString()
+        withTestApplication({
+            configureSerialization()
+            configureRouting(bookingRepository, emailRepository)
+        }) {
+            handleRequest(HttpMethod.Delete, "/visits/$requestedDateTime").apply {
+                assertEquals(HttpStatusCode.InternalServerError, response.status())
+            }
+        }
     }
 
 }
