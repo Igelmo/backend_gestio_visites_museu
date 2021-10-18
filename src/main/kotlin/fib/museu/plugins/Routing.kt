@@ -15,8 +15,7 @@ import org.koin.ktor.ext.inject
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-fun Application.configureRouting() {
-    val repository by inject<BookingRepository>()
+fun Application.configureRouting(bookingRepository: BookingRepository) {
     val email by inject<EmailSender>()
 
     install(Locations) {
@@ -34,7 +33,7 @@ fun Application.configureRouting() {
 
         get("/requestedBookings") {
             runCatching {
-                call.respond(repository.getRequestedBookings())
+                call.respond(bookingRepository.getRequestedBookings())
             }.onFailure {
                 log.error(it)
                 call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
@@ -43,7 +42,7 @@ fun Application.configureRouting() {
 
         get("/pendingVisits") {
             runCatching {
-                call.respond(repository.getPendingVisits())
+                call.respond(bookingRepository.getPendingVisits())
             }.onFailure {
                 log.error(it)
                 call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
@@ -53,8 +52,8 @@ fun Application.configureRouting() {
         delete("/requestedBookings/{requestedDateTime}") {
             runCatching {
                 val dateTime = LocalDateTime.parse(call.parameters["requestedDateTime"], DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-                val requestedBooking = repository.getRequestedBooking(dateTime)
-                repository.removeRequestedBooking(dateTime)
+                val requestedBooking = bookingRepository.getRequestedBooking(dateTime)
+                bookingRepository.removeRequestedBooking(dateTime)
                 call.respond(HttpStatusCode.Accepted)
                 email.sendEmail(requestedBooking, 1)
             }.onFailure {
@@ -66,8 +65,8 @@ fun Application.configureRouting() {
         delete("/visits/{requestedDateTime}") {
             runCatching {
                 val dateTime = LocalDateTime.parse(call.parameters["requestedDateTime"], DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-                val visit = repository.getVisit(dateTime)
-                repository.removeVisit(dateTime)
+                val visit = bookingRepository.getVisit(dateTime)
+                bookingRepository.removeVisit(dateTime)
                 call.respond(HttpStatusCode.Accepted)
                 email.sendEmail(visit.requestedBooking, 2)
             }.onFailure {
@@ -79,7 +78,7 @@ fun Application.configureRouting() {
         post("/bookings") {
             runCatching {
                 val booking = call.receive<RequestedBookingObject>()
-                repository.setNewBooking(booking)
+                bookingRepository.setNewBooking(booking)
                 call.respondText("Solicitud feta amb exit", status = HttpStatusCode.Created)
             }.onFailure {
                 log.error(it)
@@ -90,7 +89,7 @@ fun Application.configureRouting() {
         post("/visits") {
             runCatching {
                 val visit = call.receive<VisitObject>()
-                repository.setNewVisit(visit)
+                bookingRepository.setNewVisit(visit)
                 call.respondText("Reserva acceptada correctament", status = HttpStatusCode.Created)
                 email.sendEmail(visit.requestedBooking, 0)
             }.onFailure {

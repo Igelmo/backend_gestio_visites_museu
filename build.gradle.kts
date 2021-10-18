@@ -46,6 +46,11 @@ dependencies {
     implementation("org.apache.commons:commons-email:1.5")
     implementation("io.insert-koin:koin-ktor:$koin_version")
     implementation("io.insert-koin:koin-logger-slf4j:$koin_version")
-    
-    testImplementation("io.ktor:ktor-server-tests:$ktor_version")
+    implementation("org.junit.jupiter:junit-jupiter:5.7.0")
+    testImplementation("io.mockk:mockk:1.12.0")
+    testImplementation("io.insert-koin:koin-test:$koin_version")
+    testImplementation("io.insert-koin:koin-test-junit5:$koin_version")
+    testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
+    testImplementation("io.ktor:ktor-server-test-host:$ktor_version")
+    testImplementation("io.ktor:ktor-client-mock:$ktor_version")
 }
