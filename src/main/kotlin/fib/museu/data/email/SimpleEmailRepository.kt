@@ -1,10 +1,12 @@
-package fib.museu.domain.datamodels
+package fib.museu.data.email
 
+import fib.museu.domain.datamodels.RequestedBookingObject
+import fib.museu.domain.repository.EmailRepository
 import org.apache.commons.mail.SimpleEmail
 
-class EmailSender(private val email: SimpleEmail) {
+class SimpleEmailRepository(private val email: SimpleEmail) : EmailRepository {
 
-    fun sendEmail(requestedBooking: RequestedBookingObject, type: Int) {
+    override fun sendEmail(requestedBooking: RequestedBookingObject, type: Int) {
         val visitor = requestedBooking.visitor
         email.addTo(visitor.visitorEmail)
 
@@ -62,5 +64,3 @@ class EmailSender(private val email: SimpleEmail) {
         email.sendMimeMessage()
     }
 }
-
-

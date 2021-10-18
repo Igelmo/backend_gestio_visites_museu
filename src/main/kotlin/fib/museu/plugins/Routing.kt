@@ -1,9 +1,9 @@
 package fib.museu.plugins
 
-import fib.museu.domain.datamodels.EmailSender
 import fib.museu.domain.datamodels.RequestedBookingObject
 import fib.museu.domain.datamodels.VisitObject
 import fib.museu.domain.repository.BookingRepository
+import fib.museu.domain.repository.EmailRepository
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.locations.*
@@ -11,12 +11,10 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.*
-import org.koin.ktor.ext.inject
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-fun Application.configureRouting(bookingRepository: BookingRepository) {
-    val email by inject<EmailSender>()
+fun Application.configureRouting(bookingRepository: BookingRepository, emailRepository: EmailRepository) {
 
     install(Locations) {
     }
@@ -55,7 +53,7 @@ fun Application.configureRouting(bookingRepository: BookingRepository) {
                 val requestedBooking = bookingRepository.getRequestedBooking(dateTime)
                 bookingRepository.removeRequestedBooking(dateTime)
                 call.respond(HttpStatusCode.Accepted)
-                email.sendEmail(requestedBooking, 1)
+                emailRepository.sendEmail(requestedBooking, 1)
             }.onFailure {
                 log.error(it)
                 call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
@@ -68,7 +66,7 @@ fun Application.configureRouting(bookingRepository: BookingRepository) {
                 val visit = bookingRepository.getVisit(dateTime)
                 bookingRepository.removeVisit(dateTime)
                 call.respond(HttpStatusCode.Accepted)
-                email.sendEmail(visit.requestedBooking, 2)
+                emailRepository.sendEmail(visit.requestedBooking, 2)
             }.onFailure {
                 log.error(it)
                 call.respondText("ERROR", status = HttpStatusCode.InternalServerError)
@@ -91,7 +89,7 @@ fun Application.configureRouting(bookingRepository: BookingRepository) {
                 val visit = call.receive<VisitObject>()
                 bookingRepository.setNewVisit(visit)
                 call.respondText("Reserva acceptada correctament", status = HttpStatusCode.Created)
-                email.sendEmail(visit.requestedBooking, 0)
+                emailRepository.sendEmail(visit.requestedBooking, 0)
             }.onFailure {
                 log.error(it)
                 call.respondText("ERROR", status = HttpStatusCode.InternalServerError)

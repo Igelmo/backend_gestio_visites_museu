@@ -2,6 +2,7 @@ package fib.museu
 
 import fib.museu.di.mainModule
 import fib.museu.domain.repository.BookingRepository
+import fib.museu.domain.repository.EmailRepository
 import fib.museu.plugins.configureMonitoring
 import fib.museu.plugins.configureRouting
 import fib.museu.plugins.configureSerialization
@@ -33,7 +34,8 @@ fun main() {
         }
 
         val bookingRepository by inject<BookingRepository>()
-        configureRouting(bookingRepository)
+        val emailRepository by inject<EmailRepository>()
+        configureRouting(bookingRepository, emailRepository)
         configureMonitoring()
         configureSerialization()
         environment.config
