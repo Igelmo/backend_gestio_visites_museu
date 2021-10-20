@@ -5,6 +5,7 @@ import fib.museu.domain.repository.BookingRepository
 import fib.museu.domain.repository.EmailRepository
 import fib.museu.plugins.configureMonitoring
 import fib.museu.plugins.configureRouting
+import fib.museu.plugins.configureSecurity
 import fib.museu.plugins.configureSerialization
 import io.ktor.application.*
 import io.ktor.features.*
@@ -37,7 +38,7 @@ fun main() {
         val emailRepository by inject<EmailRepository>()
         configureRouting(bookingRepository, emailRepository)
         configureMonitoring()
+        configureSecurity()
         configureSerialization()
-        environment.config
     }.start(wait = true)
 }
